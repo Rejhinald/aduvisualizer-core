@@ -67,6 +67,23 @@ export async function generateVisualizationHandler(c: Context) {
       db.select().from(finishes).where(and(eq(finishes.blueprintId, blueprintId), eq(finishes.isDeleted, false))).limit(1),
     ])
 
+    // Convert finishes data from null to undefined for type compatibility
+    const finishesInput = finishesData[0]
+      ? {
+          exteriorSiding: finishesData[0].exteriorSiding ?? undefined,
+          exteriorColor: finishesData[0].exteriorColor ?? undefined,
+          roofStyle: finishesData[0].roofStyle ?? undefined,
+          roofMaterial: finishesData[0].roofMaterial ?? undefined,
+          flooringSelections: finishesData[0].flooringSelections as Record<string, string> | undefined,
+          kitchenCountertop: finishesData[0].kitchenCountertop ?? undefined,
+          cabinetStyle: finishesData[0].cabinetStyle ?? undefined,
+          cabinetColor: finishesData[0].cabinetColor ?? undefined,
+          fixtureFinish: finishesData[0].fixtureFinish ?? undefined,
+          wallColor: finishesData[0].wallColor ?? undefined,
+          styleNotes: finishesData[0].styleNotes ?? undefined,
+        }
+      : undefined
+
     // Generate the prompt
     const { structuredData, naturalLanguagePrompt } = generatePromptData(
       {
@@ -80,7 +97,7 @@ export async function generateVisualizationHandler(c: Context) {
         windows: windowsData,
         furniture: furnitureData,
       },
-      finishesData[0] ?? undefined,
+      finishesInput,
       {
         viewType: viewType as VisualizationType,
         style,
@@ -90,6 +107,7 @@ export async function generateVisualizationHandler(c: Context) {
     )
 
     // Create visualization record
+    // Cast structuredData since it's stored as JSONB with flexible shape
     const [visualization] = await db
       .insert(visualizations)
       .values({
@@ -98,7 +116,7 @@ export async function generateVisualizationHandler(c: Context) {
         name: name ?? `${viewType} visualization`,
         status: "pending",
         prompt: naturalLanguagePrompt,
-        promptData: structuredData,
+        promptData: structuredData as typeof visualizations.$inferInsert["promptData"],
         provider: "nanobanana",
       })
       .returning()

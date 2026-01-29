@@ -5,8 +5,13 @@ import { env } from "./utils/env/load"
 import { initDb } from "./config/db"
 import { v1Router } from "./api/v1/router"
 
-// Initialize Hono app
-const app = new Hono()
+// Define context variables type
+type Variables = {
+  requestId: string
+}
+
+// Initialize Hono app with typed variables
+const app = new Hono<{ Variables: Variables }>()
 
 // Request ID middleware
 app.use("*", async (c, next) => {
