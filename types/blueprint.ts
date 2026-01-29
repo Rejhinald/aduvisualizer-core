@@ -45,6 +45,8 @@ export const RoomSchema = z.object({
   description: z.string().optional(),
   color: z.string().optional(),
   vertices: z.array(VertexSchema).min(3),
+  widthFeet: z.number().optional(),
+  heightFeet: z.number().optional(),
   areaSqFt: z.number(),
   rotation: z.number().optional().default(0),
 })

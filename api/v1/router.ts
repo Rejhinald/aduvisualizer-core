@@ -2,6 +2,7 @@ import { Hono } from "hono"
 import { projectsRouter } from "./projects/_route"
 import { blueprintsRouter } from "./blueprints/_route"
 import { visualizationsRouter } from "./visualizations/_route"
+import { actionsRouter } from "./actions/_route"
 
 export const v1Router = new Hono()
 
@@ -14,3 +15,4 @@ v1Router.get("/health", (c) => {
 v1Router.route("/projects", projectsRouter)
 v1Router.route("/blueprints", blueprintsRouter)
 v1Router.route("/visualizations", visualizationsRouter)
+v1Router.route("/actions", actionsRouter)

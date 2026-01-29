@@ -83,6 +83,8 @@ export async function saveFullBlueprintHandler(c: Context) {
               description: r.description,
               color: r.color,
               vertices: r.vertices,
+              widthFeet: r.widthFeet,
+              heightFeet: r.heightFeet,
               areaSqFt: r.areaSqFt,
               rotation: r.rotation ?? 0,
             }))
