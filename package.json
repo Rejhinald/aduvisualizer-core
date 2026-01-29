@@ -1,0 +1,36 @@
+{
+  "name": "aduvisualizer-core",
+  "version": "1.0.0",
+  "description": "Backend API for ADU Visualizer - Floor plan storage with geo-coordinates for AI visualization",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot index.ts",
+    "start": "bun index.ts",
+    "build": "npx tsc -p tsconfig.build.json",
+    "lint": "eslint .",
+    "format": "prettier -w .",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "hono": "^4.9.7",
+    "drizzle-orm": "^0.44.5",
+    "postgres": "^3.4.7",
+    "zod": "^4.1.9",
+    "jsonwebtoken": "^9.0.2",
+    "pino": "^9.10.0",
+    "dotenv": "^17.2.2",
+    "date-fns": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.5"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "drizzle-kit": "^0.31.3",
+    "typescript": "^5.0.0",
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0"
+  }
+}
