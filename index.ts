@@ -24,24 +24,14 @@ app.use("*", async (c, next) => {
 // Logger middleware
 app.use("*", logger())
 
-// CORS middleware
-const corsOrigins = env.CORS_ORIGIN.split(",").map((o) => o.trim())
+// CORS middleware - allow all origins in development
 app.use(
   "*",
   cors({
-    origin: (origin) => {
-      // Allow requests with no origin (like mobile apps or curl)
-      if (!origin) return "*"
-      // Check against allowed origins
-      if (corsOrigins.includes(origin) || corsOrigins.includes("*")) {
-        return origin
-      }
-      return null
-    },
-    credentials: env.CORS_CREDENTIALS,
+    origin: "*",
     allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
-    exposeHeaders: ["X-Request-ID"],
+    exposeHeaders: ["X-Request-ID", "X-Export-Id", "X-Page-Count"],
   })
 )
 
