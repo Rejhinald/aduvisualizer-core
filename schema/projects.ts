@@ -41,9 +41,9 @@ export const projects = pgTable("projects", {
 
   // Metadata
   isDeleted: boolean("is_deleted").default(false).notNull(),
-  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
-  updatedAt: timestamp("updated_at").default(sql`now()`).notNull(),
-  deletedAt: timestamp("deleted_at"),
+  createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).default(sql`now()`).notNull(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
 })
 
 export type Project = typeof projects.$inferSelect

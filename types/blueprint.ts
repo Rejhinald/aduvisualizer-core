@@ -21,16 +21,23 @@ export const GeoPointSchema = z.object({
 export type GeoPoint = z.infer<typeof GeoPointSchema>
 
 /**
- * Room types
+ * Room types - LA ADU / California Building Code compliant
  */
 export const RoomTypeEnum = z.enum([
-  "bedroom",
-  "bathroom",
-  "kitchen",
-  "living",
-  "dining",
-  "corridor",
-  "other",
+  "bedroom",      // Bedroom (min 70 sq ft per CA Building Code)
+  "bathroom",     // Full Bathroom (shower/tub, toilet, sink)
+  "half_bath",    // Half Bath/Powder Room (toilet, sink only)
+  "kitchen",      // Kitchen (required for ADU)
+  "living",       // Living Room/Great Room
+  "dining",       // Dining Area
+  "closet",       // Closet/Wardrobe
+  "laundry",      // Laundry Room/Area
+  "storage",      // Storage Room
+  "utility",      // Utility/Mechanical Room
+  "entry",        // Entry/Foyer
+  "corridor",     // Hallway/Corridor
+  "flex",         // Flex Space/Den/Office
+  "other",        // Other/Custom
 ])
 
 export type RoomType = z.infer<typeof RoomTypeEnum>

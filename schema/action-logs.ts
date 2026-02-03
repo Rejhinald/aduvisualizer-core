@@ -39,7 +39,7 @@ export const actionLogs = pgTable("action_logs", {
 
   // Timestamps
   isDeleted: boolean("is_deleted").default(false).notNull(),
-  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
 })
 
 /**
@@ -62,7 +62,7 @@ export const editorSessions = pgTable("editor_sessions", {
   actionCount: integer("action_count").default(0).notNull(),
 
   // Timestamps
-  startedAt: timestamp("started_at").default(sql`now()`).notNull(),
-  lastActivityAt: timestamp("last_activity_at").default(sql`now()`).notNull(),
-  closedAt: timestamp("closed_at"),
+  startedAt: timestamp("started_at", { withTimezone: true }).default(sql`now()`).notNull(),
+  lastActivityAt: timestamp("last_activity_at", { withTimezone: true }).default(sql`now()`).notNull(),
+  closedAt: timestamp("closed_at", { withTimezone: true }),
 })

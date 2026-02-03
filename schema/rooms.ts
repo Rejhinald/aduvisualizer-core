@@ -3,16 +3,23 @@ import { sql } from "drizzle-orm"
 import { blueprints } from "./blueprints"
 
 /**
- * Room Types Enum
+ * Room Types Enum - LA ADU / California Building Code compliant
  */
 export const ROOM_TYPES = [
-  "bedroom",
-  "bathroom",
-  "kitchen",
-  "living",
-  "dining",
-  "corridor",
-  "other",
+  "bedroom",      // Bedroom (min 70 sq ft per CA Building Code)
+  "bathroom",     // Full Bathroom (shower/tub, toilet, sink)
+  "half_bath",    // Half Bath/Powder Room (toilet, sink only)
+  "kitchen",      // Kitchen (required for ADU)
+  "living",       // Living Room/Great Room
+  "dining",       // Dining Area
+  "closet",       // Closet/Wardrobe
+  "laundry",      // Laundry Room/Area
+  "storage",      // Storage Room
+  "utility",      // Utility/Mechanical Room
+  "entry",        // Entry/Foyer
+  "corridor",     // Hallway/Corridor
+  "flex",         // Flex Space/Den/Office
+  "other",        // Other/Custom
 ] as const
 
 export type RoomType = (typeof ROOM_TYPES)[number]
@@ -60,8 +67,8 @@ export const rooms = pgTable("rooms", {
 
   // Metadata
   isDeleted: boolean("is_deleted").default(false).notNull(),
-  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
-  updatedAt: timestamp("updated_at").default(sql`now()`).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).default(sql`now()`).notNull(),
 })
 
 export type Room = typeof rooms.$inferSelect

@@ -99,8 +99,8 @@ export const visualizations = pgTable("visualizations", {
 
   // Metadata
   isDeleted: boolean("is_deleted").default(false).notNull(),
-  createdAt: timestamp("created_at").default(sql`now()`).notNull(),
-  updatedAt: timestamp("updated_at").default(sql`now()`).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).default(sql`now()`).notNull(),
 })
 
 export type Visualization = typeof visualizations.$inferSelect
