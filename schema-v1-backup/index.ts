@@ -1,15 +1,13 @@
-// Schema exports v2
-// Core entities
+// Schema exports
 export * from "./projects"
 export * from "./blueprints"
-export * from "./corners"
-export * from "./walls"
+export * from "./rooms"
 export * from "./doors"
 export * from "./windows"
 export * from "./furniture"
-
-// Supporting entities
-export * from "./lots"
-export * from "./snapshots"
+export * from "./finishes"
+export * from "./visualizations"
 export * from "./action-logs"
+export * from "./snapshots"
+export * from "./lots"
 export * from "./exports"

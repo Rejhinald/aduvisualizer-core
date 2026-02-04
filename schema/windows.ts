@@ -1,53 +1,32 @@
-import { pgTable, uuid, varchar, timestamp, boolean, doublePrecision, integer } from "drizzle-orm/pg-core"
+import { pgTable, uuid, varchar, timestamp, doublePrecision } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
-import { blueprints } from "./blueprints"
+import { walls } from "./walls"
 
 /**
  * Window Types
  */
-export const WINDOW_TYPES = [
-  "standard",   // Standard window (3x4ft)
-  "bay",        // Bay window (6x5ft)
-  "picture",    // Picture window (5x5ft)
-  "sliding",    // Sliding window (4x3ft)
-] as const
-
+export const WINDOW_TYPES = ["standard", "bay", "picture", "sliding"] as const
 export type WindowType = (typeof WINDOW_TYPES)[number]
 
 /**
- * Windows - Window placements with precise positions
+ * Windows v2 - Placed on walls
+ * Position is 0-1 ratio along the wall length
  */
 export const windows = pgTable("windows", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  blueprintId: uuid("blueprint_id").references(() => blueprints.id).notNull(),
+  wallId: uuid("wall_id").references(() => walls.id, { onDelete: "cascade" }).notNull(),
 
-  // Window Type
-  type: varchar("type", { length: 50 }).notNull(),  // standard, bay, picture, sliding
+  // Position along wall (0 = start corner, 1 = end corner, 0.5 = center)
+  position: doublePrecision("position").notNull(),
 
-  /**
-   * Position - Center point of the window in CANVAS PIXELS
-   */
-  x: doublePrecision("x").notNull(),
-  y: doublePrecision("y").notNull(),
+  // Window type
+  type: varchar("type", { length: 50 }).default("standard").notNull(),
 
-  // Dimensions (in feet)
-  widthFeet: doublePrecision("width_feet").notNull(),
-  heightFeet: doublePrecision("height_feet").notNull(),
+  // Dimensions in feet
+  width: doublePrecision("width").default(3).notNull(),
+  height: doublePrecision("height").default(4).notNull(),
+  sillHeight: doublePrecision("sill_height").default(3).notNull(), // 3 feet from floor
 
-  // Vertical position (height from floor, in feet)
-  sillHeightFeet: doublePrecision("sill_height_feet").default(3),
-
-  // Rotation (degrees: 0, 90, 180, 270)
-  rotation: doublePrecision("rotation").default(0),
-
-  // Which room this window belongs to (optional)
-  roomId: uuid("room_id"),
-
-  // Z-order for rendering
-  zIndex: integer("z_index").default(10),
-
-  // Metadata
-  isDeleted: boolean("is_deleted").default(false).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).default(sql`now()`).notNull(),
 })
