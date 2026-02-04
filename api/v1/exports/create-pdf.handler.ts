@@ -1,6 +1,6 @@
 import type { Context } from "hono"
 import { db } from "../../../config/db"
-import { exports, blueprints } from "../../../schema"
+import { blueprintExports, blueprints } from "../../../schema"
 import { successResponse, failedResponse, formatZodErrors } from "../../../utils/response/helpers"
 import { CreatePdfExportSchema } from "../../../types/export"
 import { generateBlueprintPDF, calculatePageCount } from "../../../utils/pdf/pdf-generator"
@@ -60,7 +60,7 @@ export async function createPdfHandler(c: Context) {
 
     // Save export record to database
     const [exportRecord] = await db
-      .insert(exports)
+      .insert(blueprintExports)
       .values({
         blueprintId: parsed.data.blueprintId,
         format: "pdf",

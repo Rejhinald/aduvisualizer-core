@@ -71,7 +71,7 @@ export interface BlueprintSnapshot {
  * Exports - Track all blueprint exports (PDF, PNG, JSON)
  * Stores export history with settings and optional file references
  */
-export const exports = pgTable("exports", {
+export const blueprintExports = pgTable("exports", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
   blueprintId: uuid("blueprint_id").references(() => blueprints.id).notNull(),
 
@@ -99,5 +99,5 @@ export const exports = pgTable("exports", {
   isDeleted: boolean("is_deleted").default(false).notNull(),
 })
 
-export type Export = typeof exports.$inferSelect
-export type NewExport = typeof exports.$inferInsert
+export type BlueprintExport = typeof blueprintExports.$inferSelect
+export type NewBlueprintExport = typeof blueprintExports.$inferInsert

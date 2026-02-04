@@ -1,55 +1,111 @@
-import { pgTable, uuid, varchar, timestamp, boolean, jsonb, text } from "drizzle-orm/pg-core"
+import { pgTable, uuid, varchar, timestamp, boolean, jsonb, text, real } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 import { blueprints } from "./blueprints"
 
 /**
- * Finishes - Material and style selections for the ADU
+ * Vibe options for room styling
+ */
+export type VibeOption =
+  | "modern_minimal"
+  | "scandinavian"
+  | "industrial"
+  | "bohemian"
+  | "midcentury"
+  | "coastal"
+  | "farmhouse"
+  | "luxury"
+
+/**
+ * Quality/price tier
+ */
+export type TierOption = "budget" | "standard" | "premium"
+
+/**
+ * Lifestyle options by room type
+ */
+export const LIFESTYLE_OPTIONS = {
+  living: ["tv-setup", "gaming-corner", "reading-nook", "home-office"],
+  bedroom: ["work-from-bed", "vanity-station", "reading-corner"],
+  kitchen: ["coffee-bar", "breakfast-nook", "wine-storage"],
+  dining: ["formal-setting", "casual-setting", "bar-cart"],
+  bathroom: ["spa-vibes", "minimal-functional"],
+  half_bath: ["minimal-functional"],
+  // Utility/storage rooms get no lifestyle options
+} as const
+
+/**
+ * Global template presets
+ */
+export type TemplateOption =
+  | "builder_basic"
+  | "modern_minimal"
+  | "warm_contemporary"
+  | "scandinavian_light"
+  | "industrial_chic"
+  | "coastal_casual"
+  | "midcentury_modern"
+  | "luxury_contemporary"
+
+/**
+ * Per-room finish selection
+ */
+export interface RoomFinish {
+  roomId: string
+  roomName: string
+  roomType: string
+  vibe: VibeOption
+  tier: TierOption
+  lifestyle: string[]
+  customNotes?: string
+}
+
+/**
+ * Camera placement for first-person renders
+ */
+export interface CameraPlacement {
+  position: { x: number; y: number }
+  rotation: number // degrees, 0 = facing right
+  fov: 30 | 60 | 90
+  height: number // feet (3-7 range typical)
+}
+
+/**
+ * Render record for tracking generated images
+ */
+export interface RenderRecord {
+  id: string
+  type: "topdown" | "firstperson"
+  quality: "preview" | "final"
+  url: string
+  prompt?: string
+  generatedAt: string
+}
+
+/**
+ * Finishes - Room-based style selections for ADU visualization
  */
 export const finishes = pgTable("finishes", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  blueprintId: uuid("blueprint_id").references(() => blueprints.id).notNull(),
+  blueprintId: uuid("blueprint_id").references(() => blueprints.id).notNull().unique(),
 
-  // Exterior
-  exteriorSiding: varchar("exterior_siding", { length: 100 }),  // e.g., "wood_lap", "stucco", "vinyl"
-  exteriorColor: varchar("exterior_color", { length: 50 }),  // Hex color or color name
-  roofStyle: varchar("roof_style", { length: 50 }),  // flat, gable, hip, shed
-  roofMaterial: varchar("roof_material", { length: 50 }),  // asphalt_shingle, metal, tile
+  // Global settings
+  globalTemplate: varchar("global_template", { length: 50 }).$type<TemplateOption>(),
+  globalTier: varchar("global_tier", { length: 20 }).$type<TierOption>().default("standard").notNull(),
 
-  // Flooring by room type
-  flooringSelections: jsonb("flooring_selections").$type<{
-    bedroom?: string  // e.g., "hardwood_oak", "carpet_plush"
-    bathroom?: string  // e.g., "tile_ceramic", "vinyl_luxury"
-    kitchen?: string
-    living?: string
-    default?: string
-  }>(),
+  // Per-room finish selections
+  roomFinishes: jsonb("room_finishes").$type<RoomFinish[]>().default([]).notNull(),
 
-  // Countertops
-  kitchenCountertop: varchar("kitchen_countertop", { length: 100 }),  // granite, quartz, laminate
-  bathroomCountertop: varchar("bathroom_countertop", { length: 100 }),
+  // Camera placement for first-person renders
+  cameraPlacement: jsonb("camera_placement").$type<CameraPlacement | null>(),
 
-  // Cabinets
-  cabinetStyle: varchar("cabinet_style", { length: 100 }),  // shaker, flat_panel, raised_panel
-  cabinetColor: varchar("cabinet_color", { length: 50 }),
+  // Generated renders
+  topDownPreviewUrl: text("top_down_preview_url"),
+  topDownFinalUrl: text("top_down_final_url"),
+  firstPersonPreviewUrl: text("first_person_preview_url"),
+  firstPersonFinalUrl: text("first_person_final_url"),
 
-  // Fixtures
-  fixtureFinish: varchar("fixture_finish", { length: 50 }),  // chrome, brushed_nickel, matte_black, brass
-
-  // Windows & Doors
-  windowStyle: varchar("window_style", { length: 50 }),  // single_hung, double_hung, casement
-  windowFrameColor: varchar("window_frame_color", { length: 50 }),
-  interiorDoorStyle: varchar("interior_door_style", { length: 50 }),  // panel, flush, shaker
-  exteriorDoorStyle: varchar("exterior_door_style", { length: 50 }),
-
-  // Walls
-  wallColor: varchar("wall_color", { length: 50 }),
-  accentWallColor: varchar("accent_wall_color", { length: 50 }),
-
-  // Optional upgrades (JSON array of upgrade codes)
-  upgrades: jsonb("upgrades").$type<string[]>(),  // ["smart_home", "solar_ready", "ev_charger"]
-
-  // Style notes for AI (free text description)
-  styleNotes: text("style_notes"),  // "Modern minimalist with warm wood tones"
+  // Render history (for regeneration/comparison)
+  renderHistory: jsonb("render_history").$type<RenderRecord[]>().default([]),
 
   // Metadata
   isDeleted: boolean("is_deleted").default(false).notNull(),

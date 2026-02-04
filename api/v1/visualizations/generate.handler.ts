@@ -67,20 +67,20 @@ export async function generateVisualizationHandler(c: Context) {
       db.select().from(finishes).where(and(eq(finishes.blueprintId, blueprintId), eq(finishes.isDeleted, false))).limit(1),
     ])
 
-    // Convert finishes data from null to undefined for type compatibility
+    // Convert finishes data to the new vibe-based format
     const finishesInput = finishesData[0]
       ? {
-          exteriorSiding: finishesData[0].exteriorSiding ?? undefined,
-          exteriorColor: finishesData[0].exteriorColor ?? undefined,
-          roofStyle: finishesData[0].roofStyle ?? undefined,
-          roofMaterial: finishesData[0].roofMaterial ?? undefined,
-          flooringSelections: finishesData[0].flooringSelections as Record<string, string> | undefined,
-          kitchenCountertop: finishesData[0].kitchenCountertop ?? undefined,
-          cabinetStyle: finishesData[0].cabinetStyle ?? undefined,
-          cabinetColor: finishesData[0].cabinetColor ?? undefined,
-          fixtureFinish: finishesData[0].fixtureFinish ?? undefined,
-          wallColor: finishesData[0].wallColor ?? undefined,
-          styleNotes: finishesData[0].styleNotes ?? undefined,
+          globalTemplate: finishesData[0].globalTemplate ?? undefined,
+          globalTier: finishesData[0].globalTier,
+          roomFinishes: (finishesData[0].roomFinishes as Array<{
+            roomId: string
+            roomName: string
+            roomType: string
+            vibe: string
+            tier: string
+            lifestyle: string[]
+            customNotes?: string
+          }>) || [],
         }
       : undefined
 

@@ -1,6 +1,6 @@
 import type { Context } from "hono"
 import { db } from "../../../config/db"
-import { exports } from "../../../schema"
+import { blueprintExports } from "../../../schema"
 import { successResponse, failedResponse } from "../../../utils/response/helpers"
 import { eq, and, desc } from "drizzle-orm"
 
@@ -22,33 +22,33 @@ export async function listExportsHandler(c: Context) {
 
     // Build conditions
     const conditions = [
-      eq(exports.blueprintId, blueprintId),
-      eq(exports.isDeleted, false),
+      eq(blueprintExports.blueprintId, blueprintId),
+      eq(blueprintExports.isDeleted, false),
     ]
 
     if (format) {
-      conditions.push(eq(exports.format, format))
+      conditions.push(eq(blueprintExports.format, format))
     }
 
     // Query exports
     const exportList = await db
       .select({
-        id: exports.id,
-        blueprintId: exports.blueprintId,
-        format: exports.format,
-        fileName: exports.fileName,
-        fileUrl: exports.fileUrl,
-        fileSizeBytes: exports.fileSizeBytes,
-        settings: exports.settings,
-        pageCount: exports.pageCount,
-        sheetSize: exports.sheetSize,
-        scale: exports.scale,
-        createdAt: exports.createdAt,
-        expiresAt: exports.expiresAt,
+        id: blueprintExports.id,
+        blueprintId: blueprintExports.blueprintId,
+        format: blueprintExports.format,
+        fileName: blueprintExports.fileName,
+        fileUrl: blueprintExports.fileUrl,
+        fileSizeBytes: blueprintExports.fileSizeBytes,
+        settings: blueprintExports.settings,
+        pageCount: blueprintExports.pageCount,
+        sheetSize: blueprintExports.sheetSize,
+        scale: blueprintExports.scale,
+        createdAt: blueprintExports.createdAt,
+        expiresAt: blueprintExports.expiresAt,
       })
       .from(exports)
       .where(and(...conditions))
-      .orderBy(desc(exports.createdAt))
+      .orderBy(desc(blueprintExports.createdAt))
       .limit(limit)
       .offset(offset)
 

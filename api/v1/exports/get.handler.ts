@@ -1,6 +1,6 @@
 import type { Context } from "hono"
 import { db } from "../../../config/db"
-import { exports } from "../../../schema"
+import { blueprintExports } from "../../../schema"
 import { successResponse, failedResponse } from "../../../utils/response/helpers"
 import { eq, and } from "drizzle-orm"
 
@@ -20,7 +20,7 @@ export async function getExportHandler(c: Context) {
     const [exportRecord] = await db
       .select()
       .from(exports)
-      .where(and(eq(exports.id, exportId), eq(exports.isDeleted, false)))
+      .where(and(eq(blueprintExports.id, exportId), eq(blueprintExports.isDeleted, false)))
       .limit(1)
 
     if (!exportRecord) {

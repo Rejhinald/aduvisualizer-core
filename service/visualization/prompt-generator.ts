@@ -31,18 +31,20 @@ export interface BlueprintData {
   furniture: Furniture[]
 }
 
+export interface RoomFinish {
+  roomId: string
+  roomName: string
+  roomType: string
+  vibe: string
+  tier: string
+  lifestyle: string[]
+  customNotes?: string
+}
+
 export interface FinishesData {
-  exteriorSiding?: string
-  exteriorColor?: string
-  roofStyle?: string
-  roofMaterial?: string
-  flooringSelections?: Record<string, string>
-  kitchenCountertop?: string
-  cabinetStyle?: string
-  cabinetColor?: string
-  fixtureFinish?: string
-  wallColor?: string
-  styleNotes?: string
+  globalTemplate?: string
+  globalTier: string
+  roomFinishes: RoomFinish[]
 }
 
 export interface PromptConfig {
@@ -250,17 +252,47 @@ export function generatePromptData(
     .map(f => describeFurniture(f, blueprint.pixelsPerFoot, canvasCenter))
     .join("\n  - ")
 
-  // Finishes description
+  // Finishes description - using vibe-based system
   let finishesDescription = ""
-  if (finishes) {
-    const parts: string[] = []
-    if (finishes.exteriorSiding) parts.push(`${finishes.exteriorSiding} siding`)
-    if (finishes.exteriorColor) parts.push(`painted ${finishes.exteriorColor}`)
-    if (finishes.roofStyle && finishes.roofMaterial) {
-      parts.push(`${finishes.roofStyle} roof with ${finishes.roofMaterial}`)
+  if (finishes && finishes.roomFinishes.length > 0) {
+    const vibeDescriptions: Record<string, string> = {
+      modern_minimal: "clean lines, neutral colors, minimalist aesthetic with white walls and natural light",
+      scandinavian: "light wood tones, cozy textiles, hygge atmosphere with white and soft grays",
+      industrial: "exposed brick, metal accents, concrete elements, Edison bulbs",
+      bohemian: "layered textiles, plants, warm earthy colors, eclectic decor",
+      midcentury: "mid-century modern furniture, warm wood, organic curves, vintage touches",
+      coastal: "beach-inspired, light blues, sandy neutrals, natural textures",
+      farmhouse: "rustic wood, shiplap, vintage accents, warm whites",
+      luxury: "premium materials, elegant finishes, rich textures, sophisticated palette",
     }
-    if (finishes.styleNotes) parts.push(finishes.styleNotes)
-    finishesDescription = parts.join(", ")
+
+    const tierDescriptions: Record<string, string> = {
+      budget: "cost-effective materials, basic finishes",
+      standard: "quality materials, mid-range finishes",
+      premium: "high-end materials, luxury finishes",
+    }
+
+    // Group rooms by vibe
+    const vibeGroups = new Map<string, string[]>()
+    for (const rf of finishes.roomFinishes) {
+      const rooms = vibeGroups.get(rf.vibe) || []
+      rooms.push(rf.roomName)
+      vibeGroups.set(rf.vibe, rooms)
+    }
+
+    const parts: string[] = []
+    for (const [vibe, roomNames] of vibeGroups) {
+      const vibeDesc = vibeDescriptions[vibe] || vibe
+      parts.push(`${roomNames.join(", ")}: ${vibeDesc}`)
+    }
+
+    parts.push(`Overall quality tier: ${tierDescriptions[finishes.globalTier] || finishes.globalTier}`)
+
+    if (finishes.globalTemplate) {
+      parts.push(`Design template: ${finishes.globalTemplate.replace(/_/g, " ")}`)
+    }
+
+    finishesDescription = parts.join("\n")
   }
 
   // View-specific instructions

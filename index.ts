@@ -1,9 +1,11 @@
 import { Hono } from "hono"
 import { cors } from "hono/cors"
 import { logger } from "hono/logger"
+import { serveStatic } from "hono/bun"
 import { env } from "./utils/env/load"
 import { initDb } from "./config/db"
 import { v1Router } from "./api/v1/router"
+import { isGeminiAvailable } from "./service/render"
 
 // Define context variables type
 type Variables = {
@@ -49,6 +51,12 @@ app.get("/", (c) => {
 const API_PREFIX = env.API_PREFIX
 const API_VERSION = env.API_VERSION
 app.route(`${API_PREFIX}/${API_VERSION}`, v1Router)
+
+// Serve static renders
+app.use("/renders/*", serveStatic({ root: "./storage" }))
+
+// Serve vibe thumbnails
+app.use("/vibes/*", serveStatic({ root: "./storage" }))
 
 // 404 handler
 app.notFound((c) => {
@@ -101,15 +109,14 @@ async function main() {
   console.log(`🚀 Server starting on http://localhost:${env.PORT}`)
   console.log(`📡 API available at http://localhost:${env.PORT}${API_PREFIX}/${API_VERSION}`)
   console.log(`🗺️  Geo-coordinates ready for satellite overlay`)
-  console.log(`🎨 AI prompt generation ready for Nano Banana`)
+  console.log(`🎨 Gemini render service: ${isGeminiAvailable() ? "✅ Available" : "❌ Not configured (set GEMINI_API_KEY)"}`)
   console.log("")
-  console.log("Available endpoints:")
+  console.log("Key endpoints:")
   console.log(`  GET  ${API_PREFIX}/${API_VERSION}/health`)
-  console.log(`  POST ${API_PREFIX}/${API_VERSION}/projects`)
-  console.log(`  POST ${API_PREFIX}/${API_VERSION}/projects/:id/geo-location`)
   console.log(`  POST ${API_PREFIX}/${API_VERSION}/blueprints/save`)
-  console.log(`  GET  ${API_PREFIX}/${API_VERSION}/blueprints/:id/geo`)
-  console.log(`  POST ${API_PREFIX}/${API_VERSION}/visualizations/generate`)
+  console.log(`  POST ${API_PREFIX}/${API_VERSION}/finishes`)
+  console.log(`  POST ${API_PREFIX}/${API_VERSION}/finishes/render`)
+  console.log(`  GET  ${API_PREFIX}/${API_VERSION}/finishes/options`)
   console.log("")
 
   Bun.serve({

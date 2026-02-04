@@ -66,18 +66,18 @@ export const snapshots = pgTable("snapshots", {
     };
     // Lot data (optional for backward compatibility)
     lotData?: {
-      parcelNumber?: string;
-      address?: string;
-      city?: string;
-      state?: string;
-      zipCode?: string;
+      parcelNumber?: string | null;
+      address?: string | null;
+      city?: string | null;
+      state?: string | null;
+      zipCode?: string | null;
       geoLat: number;
       geoLng: number;
       geoRotation: number;
-      boundaryVertices?: Array<{ lat: number; lng: number }>;
-      lotWidthFeet?: number;
-      lotDepthFeet?: number;
-      lotAreaSqFt?: number;
+      boundaryVertices?: Array<{ lat: number; lng: number }> | null;
+      lotWidthFeet?: number | null;
+      lotDepthFeet?: number | null;
+      lotAreaSqFt?: number | null;
       aduOffsetX: number;
       aduOffsetY: number;
       aduRotation: number;
@@ -85,7 +85,7 @@ export const snapshots = pgTable("snapshots", {
       setbackBackFeet: number;
       setbackLeftFeet: number;
       setbackRightFeet: number;
-      dataSource?: string;
+      dataSource?: string | null;
     };
   }>().notNull(),
 
