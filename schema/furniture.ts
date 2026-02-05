@@ -21,6 +21,19 @@ export const FURNITURE_TYPES = [
 export type FurnitureType = (typeof FURNITURE_TYPES)[number]
 
 /**
+ * Furniture Categories
+ */
+export const FURNITURE_CATEGORIES = [
+  "bedroom",
+  "bathroom",
+  "kitchen",
+  "living",
+  "office",
+] as const
+
+export type FurnitureCategory = (typeof FURNITURE_CATEGORIES)[number]
+
+/**
  * Furniture v2 - Free placement in feet coordinates
  */
 export const furniture = pgTable("furniture", {

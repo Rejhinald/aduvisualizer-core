@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, timestamp, doublePrecision } from "drizzle-orm/pg-core"
+import { pgTable, uuid, varchar, timestamp, doublePrecision, integer } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 import { walls } from "./walls"
 
@@ -25,6 +25,11 @@ export const doors = pgTable("doors", {
   // Dimensions in feet
   width: doublePrecision("width").default(3).notNull(),      // 3 feet standard
   height: doublePrecision("height").default(6.67).notNull(), // 6'8" standard
+
+  // Orientation: 0-3 cycles through hinge left/right × swing direction
+  // 0 = hinge left, swing down; 1 = hinge right, swing down
+  // 2 = hinge right, swing up; 3 = hinge left, swing up
+  orientation: integer("orientation").default(0).notNull(),
 
   createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).default(sql`now()`).notNull(),

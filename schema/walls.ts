@@ -1,4 +1,4 @@
-import { pgTable, uuid, doublePrecision, timestamp } from "drizzle-orm/pg-core"
+import { pgTable, uuid, doublePrecision, timestamp, varchar } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 import { blueprints } from "./blueprints"
 import { corners } from "./corners"
@@ -7,6 +7,11 @@ import { corners } from "./corners"
  * Walls v2 - Connect two corners
  * Walls have thickness and height (in feet)
  * Doors and windows are placed on walls
+ *
+ * Wall types:
+ * - "solid": Physical wall, renders in 3D
+ * - "virtual": Room divider, no 3D geometry (just defines floor zones)
+ * - "partition": Half-height wall (future feature)
  */
 export const walls = pgTable("walls", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -19,6 +24,9 @@ export const walls = pgTable("walls", {
   // Dimensions in feet
   thickness: doublePrecision("thickness").default(0.5).notNull(),  // 6 inches default
   height: doublePrecision("height").default(9).notNull(),           // 9 feet default
+
+  // Wall type determines rendering behavior
+  wallType: varchar("wall_type", { length: 20 }).default("solid").notNull(),
 
   createdAt: timestamp("created_at", { withTimezone: true }).default(sql`now()`).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).default(sql`now()`).notNull(),
