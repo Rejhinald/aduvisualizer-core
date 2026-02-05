@@ -5,6 +5,7 @@ import { serveStatic } from "hono/bun"
 import { env } from "./utils/env/load"
 import { initDb } from "./config/db"
 import { v1Router } from "./api/v1/router"
+import { apiRouterV2 } from "./api/v2/router"
 import { isGeminiAvailable } from "./service/render"
 
 // Define context variables type
@@ -51,6 +52,9 @@ app.get("/", (c) => {
 const API_PREFIX = env.API_PREFIX
 const API_VERSION = env.API_VERSION
 app.route(`${API_PREFIX}/${API_VERSION}`, v1Router)
+
+// API v2 routes (Corner/Wall Graph Model)
+app.route(`${API_PREFIX}/v2`, apiRouterV2)
 
 // Serve static renders
 app.use("/renders/*", serveStatic({ root: "./storage" }))
@@ -111,12 +115,16 @@ async function main() {
   console.log(`🗺️  Geo-coordinates ready for satellite overlay`)
   console.log(`🎨 Gemini render service: ${isGeminiAvailable() ? "✅ Available" : "❌ Not configured (set GEMINI_API_KEY)"}`)
   console.log("")
-  console.log("Key endpoints:")
+  console.log("Key endpoints (v1 - legacy):")
   console.log(`  GET  ${API_PREFIX}/${API_VERSION}/health`)
   console.log(`  POST ${API_PREFIX}/${API_VERSION}/blueprints/save`)
-  console.log(`  POST ${API_PREFIX}/${API_VERSION}/finishes`)
-  console.log(`  POST ${API_PREFIX}/${API_VERSION}/finishes/render`)
-  console.log(`  GET  ${API_PREFIX}/${API_VERSION}/finishes/options`)
+  console.log("")
+  console.log("Key endpoints (v2 - Corner/Wall Graph):")
+  console.log(`  GET  ${API_PREFIX}/v2/health`)
+  console.log(`  POST ${API_PREFIX}/v2/blueprints/save`)
+  console.log(`  GET  ${API_PREFIX}/v2/blueprints/:id`)
+  console.log(`  POST ${API_PREFIX}/v2/blueprints/:id/corners`)
+  console.log(`  POST ${API_PREFIX}/v2/blueprints/:id/walls`)
   console.log("")
 
   Bun.serve({

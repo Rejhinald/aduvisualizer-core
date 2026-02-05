@@ -2,8 +2,11 @@
  * Centralized types for ADU Visualizer Core
  */
 
-// Blueprint types
+// Blueprint types (v1 - legacy)
 export * from "./blueprint"
+
+// Blueprint types (v2 - corner/wall graph model)
+export * from "./blueprint-v2"
 
 // Project types
 export * from "./project"
