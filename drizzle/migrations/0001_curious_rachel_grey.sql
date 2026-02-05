@@ -1,0 +1,1 @@
+ALTER TABLE "walls" ADD COLUMN "wall_type" varchar(20) DEFAULT 'solid' NOT NULL;

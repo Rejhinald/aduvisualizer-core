@@ -1,6 +1,6 @@
 {
-  "id": "53b71eb4-1813-47e9-87e2-a668781472f5",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "83f90ff2-b7c9-4249-a7ea-479a84dae212",
+  "prevId": "88b3a4b1-e9c9-45ed-85ea-a6a0390d6eb5",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -252,6 +252,171 @@
           "tableTo": "projects",
           "columnsFrom": [
             "project_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.boundary_corners": {
+      "name": "boundary_corners",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "blueprint_id": {
+          "name": "blueprint_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "x": {
+          "name": "x",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "y": {
+          "name": "y",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "order_index": {
+          "name": "order_index",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "boundary_corners_blueprint_id_blueprints_id_fk": {
+          "name": "boundary_corners_blueprint_id_blueprints_id_fk",
+          "tableFrom": "boundary_corners",
+          "tableTo": "blueprints",
+          "columnsFrom": [
+            "blueprint_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.boundary_walls": {
+      "name": "boundary_walls",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "blueprint_id": {
+          "name": "blueprint_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_corner_id": {
+          "name": "start_corner_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "end_corner_id": {
+          "name": "end_corner_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "boundary_walls_blueprint_id_blueprints_id_fk": {
+          "name": "boundary_walls_blueprint_id_blueprints_id_fk",
+          "tableFrom": "boundary_walls",
+          "tableTo": "blueprints",
+          "columnsFrom": [
+            "blueprint_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "boundary_walls_start_corner_id_boundary_corners_id_fk": {
+          "name": "boundary_walls_start_corner_id_boundary_corners_id_fk",
+          "tableFrom": "boundary_walls",
+          "tableTo": "boundary_corners",
+          "columnsFrom": [
+            "start_corner_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "boundary_walls_end_corner_id_boundary_corners_id_fk": {
+          "name": "boundary_walls_end_corner_id_boundary_corners_id_fk",
+          "tableFrom": "boundary_walls",
+          "tableTo": "boundary_corners",
+          "columnsFrom": [
+            "end_corner_id"
           ],
           "columnsTo": [
             "id"
@@ -832,6 +997,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": 9
+        },
+        "wall_type": {
+          "name": "wall_type",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'solid'"
         },
         "created_at": {
           "name": "created_at",
